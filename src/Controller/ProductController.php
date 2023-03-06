@@ -18,19 +18,23 @@ class ProductController extends AbstractController
      * @throws MongoDBException
      */
     #[Route('/product', name: 'new_product', methods: ['POST'])]
-    public function index(Request $request, DocumentManager $documentManager): Response
+    public function index(Request $request, DocumentManager $documentManager): JsonResponse
     {
         $product = new Product();
-        var_dump($request->request->get('Product'));
-        die();
-        $product->setName('Juan');
-        $product->setPrice('9.999');
+        $product->setName($request->request->get('name'));
+        $product->setPrice($request->request->get('price'));
         $documentManager->persist($product);
         $documentManager->flush();
 
-        return new Response('Created product id ' . $product->getId());
+        return $this->json([
+            'status' => true,
+            'id' => $product->getId(),
+        ]);
     }
 
+    /**
+     * @throws MongoDBException
+     */
     #[Route('/products', name: 'product', methods: ['GET'])]
     public function showProducts(DocumentManager $documentManager): JsonResponse
     {

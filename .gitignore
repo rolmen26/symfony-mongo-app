@@ -39,6 +39,7 @@
 /var/
 /vendor/
 /.env
+/.idea/
 
 # Assets and user uploads
 /web/bundles/

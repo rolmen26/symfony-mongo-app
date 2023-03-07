@@ -21,8 +21,11 @@ class ProductController extends AbstractController
     public function index(Request $request, DocumentManager $documentManager): JsonResponse
     {
         $product = new Product();
-        $product->setName($request->request->get('name'));
-        $product->setPrice($request->request->get('price'));
+
+        $dataRequest = json_decode($request->getContent(), true);
+
+        $product->setName($dataRequest['name']);
+        $product->setPrice($dataRequest['price']);
         $documentManager->persist($product);
         $documentManager->flush();
 
@@ -38,10 +41,13 @@ class ProductController extends AbstractController
     #[Route('/products', name: 'product', methods: ['GET'])]
     public function showProducts(DocumentManager $documentManager): JsonResponse
     {
-        $products = $documentManager->getDocumentCollection(Product::class)->find();
+        $products = $documentManager->getDocumentCollection(Product::class)
+            ->find()
+            ->toArray();
 
         return $this->json([
-            'productos' => $products->toArray()
+            'productos' => $products
         ]);
+
     }
 }

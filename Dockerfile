@@ -6,7 +6,7 @@ RUN apk update && apk add --no-cache \
     libxml2-dev pkgconfig \
     zip \
     unzip \
-    autoconf \
+    autoconf curl-dev openssl-dev \
     bash \
     nginx \
     gcc g++ make \
@@ -30,7 +30,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
 
 #Run Composer
-#RUN composer install --no-dev --no-scripts --prefer-dist --no-interaction --optimize-autoloader
+RUN composer install --no-dev --no-scripts --prefer-dist --no-interaction --optimize-autoloader
 
 # Copy the Nginx config file
 COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf

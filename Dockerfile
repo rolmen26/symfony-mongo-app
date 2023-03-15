@@ -19,7 +19,7 @@ RUN apk update && apk add --no-cache \
     rm -rf /var/cache/apk/*
 
 
-WORKDIR /var/www/html
+WORKDIR /app
 
 COPY . .
 

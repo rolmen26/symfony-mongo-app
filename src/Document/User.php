@@ -2,11 +2,12 @@
 
 namespace App\Document;
 
+use App\Repository\UserRepository;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[MongoDB\Document(collection: 'users')]
+#[MongoDB\Document(collection: 'users', repositoryClass: UserRepository::class)]
 #[MongoDB\Unique(fields: 'email')]
 class User
 {
@@ -26,12 +27,12 @@ class User
     protected ?string $password = null;
 
     #[MongoDB\Field(type: 'date')]
-    #[Assert\Date]
-    protected ?string $created_at = null;
+    #[Assert\DateTime]
+    protected ?\DateTime $created_at = null;
 
     #[MongoDB\Field(type: 'date')]
     #[Assert\Date]
-    protected ?string $updated_at = null;
+    protected ?\DateTime $updated_at = null;
 
     public function getId(): string
     {
@@ -56,13 +57,13 @@ class User
     // stupid simple encryption (please don't copy it!)
     public function setPassword(?string $password): void
     {
-        $this->password = sha1($password);
+        $this->password = password_hash($password, CRYPT_SHA512);
     }
 
     /**
-     * @param string|null $created_at
+     * @param \DateTime $created_at
      */
-    public function setCreatedAt(?string $created_at): void
+    public function setCreatedAt(\DateTime $created_at): void
     {
         $this->created_at = $created_at;
     }
@@ -70,7 +71,7 @@ class User
     /**
      * @param string|null $updated_at
      */
-    public function setUpdatedAt(?string $updated_at): void
+    public function setUpdatedAt(mixed $updated_at): void
     {
         $this->updated_at = $updated_at;
     }
@@ -78,7 +79,7 @@ class User
     /**
      * @return string|null
      */
-    public function getCreatedAt(): ?string
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->created_at;
     }
@@ -86,7 +87,7 @@ class User
     /**
      * @return string|null
      */
-    public function getUpdatedAt(): ?string
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updated_at;
     }

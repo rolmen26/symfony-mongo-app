@@ -14,6 +14,7 @@ RUN apk update && apk add --no-cache \
     supervisor && \
     pecl install mongodb && \
     echo "extension=mongodb.so" >> /usr/local/etc/php/php.ini-development && \
+    apk add --no-cache $PHPIZE_DEPS && \
     docker-php-ext-enable mongodb && \
     docker-php-ext-install gd sockets && \
     rm -rf /var/cache/apk/*
@@ -32,10 +33,16 @@ RUN curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/
 #Run Composer
 RUN composer install --no-dev --no-scripts --prefer-dist --no-interaction --optimize-autoloader
 
+#Xdebug Install
+RUN apk add --update linux-headers && \
+    pecl install xdebug && \
+    docker-php-ext-enable xdebug
+
 # Copy the Nginx config file
 COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/fpm-pool.conf
 COPY ./docker/supervisor/supervisord.conf /etc/supervisord.conf
+COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN chmod -R 777 ./
 

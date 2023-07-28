@@ -3,7 +3,6 @@
 namespace App\Document;
 
 use App\Repository\UserRepository;
-use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,50 +19,50 @@ class User
     #[MongoDB\Field(type: 'string')]
     #[Assert\NotBlank]
     #[Assert\Email]
-    protected ?string $email = null;
+    protected string $email;
 
     #[MongoDB\Field(type: 'string')]
     #[Assert\NotBlank]
-    protected ?string $password = null;
-
-    #[MongoDB\Field(type: 'date')]
-    #[Assert\DateTime]
-    protected ?\DateTime $created_at = null;
+    protected string $password;
 
     #[MongoDB\Field(type: 'date')]
     #[Assert\Date]
-    protected ?\DateTime $updated_at = null;
+    protected string $created_at;
+
+    #[MongoDB\Field(type: 'date')]
+    #[Assert\Date]
+    protected string $updated_at;
 
     public function getId(): string
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
-    public function setEmail(?string $email): void
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
 
     // stupid simple encryption (please don't copy it!)
-    public function setPassword(?string $password): void
+    public function setPassword(string $password): void
     {
         $this->password = password_hash($password, CRYPT_SHA512);
     }
 
     /**
-     * @param \DateTime $created_at
+     * @param string $created_at
      */
-    public function setCreatedAt(\DateTime $created_at): void
+    public function setCreatedAt(string $created_at): void
     {
         $this->created_at = $created_at;
     }
@@ -77,17 +76,17 @@ class User
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): string
     {
         return $this->created_at;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): string
     {
         return $this->updated_at;
     }

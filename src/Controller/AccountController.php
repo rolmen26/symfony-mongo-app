@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Document\User;
+use App\Events\ExampleEvent;
 use DateTime;
+use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -32,8 +34,7 @@ class AccountController extends AbstractController
 
             $user->setEmail($data['email']);
             $user->setPassword($data['password']);
-            $user->setCreatedAt(new DateTime());
-            $user->setUpdatedAt(new DateTime());
+            $user->setCreatedAt(date("Y-m-d H:i:s"));
 
             $dm->persist($user);
             try { //Here is where the data will be saved
@@ -51,7 +52,7 @@ class AccountController extends AbstractController
     }
 
     /**
-     * Request that ask for the DB if there's a user with the e-mail and password
+     * Request that asks for the DB if there's a user with the e-mail and password
      *
      * @param DocumentManager $dm
      * @return JsonResponse

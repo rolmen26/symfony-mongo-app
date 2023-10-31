@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Document\User;
-use App\Events\ExampleEvent;
-use DateTime;
-use Doctrine\Common\EventManager;
+use App\Repository\UserRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\LockException;
 use Doctrine\ODM\MongoDB\Mapping\MappingException;
@@ -27,14 +25,12 @@ class AccountController extends AbstractController
         $data = file_get_contents('php://input');
         $data = json_decode($data, true);
 
-        $emailExists = $dm->getRepository(User::class)->userExists($data['email']);
+        /** @var UserRepository $userRepository  */
+        $userRepository = $dm->getRepository(User::class);
+        $userExists = $userRepository->userExists($data['email']);
 
-        if (!$emailExists) {
-            $user = new User();
-
-            $user->setEmail($data['email']);
-            $user->setPassword($data['password']);
-            $user->setCreatedAt(date("Y-m-d H:i:s"));
+        if (!$userExists) {
+            $user = new User($data['email'], $data['password']);
 
             $dm->persist($user);
             try { //Here is where the data will be saved
@@ -64,10 +60,11 @@ class AccountController extends AbstractController
         $data = json_decode($data, true);
 
         try {
-            /** @var User|bool $userFound */
-            $userFound = $dm->getRepository(User::class)->findLoginUser($data['email'], $data['password']);
+            /** @var UserRepository $userRepository */
+            $userRepository = $dm->getRepository(User::class);
+            $userFound = $userRepository->findLoginUser($data['email'], $data['password']);
         } catch (LockException|MappingException $e) {
-            return $this->createNotFoundException($e->getMessage());
+            return $this->json(['error' => $e->getMessage()], 500);
         }
         if (!$userFound) {
             return $this->json(['error' => 'User not found'], 500);

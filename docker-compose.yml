@@ -13,13 +13,12 @@ services:
       - /app/var
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/php/fpm-pool.conf:/usr/local/etc/php-fpm.d/fpm-pool.conf
-      - ./docker/supervisor/supervisord.conf:/etc/supervisord.conf
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
     ports:
       - "80:80"
     networks:
       - mongo_test
-    depends_on:
-      - mongo
+
 ###> doctrine/mongodb-odm-bundle ###
   mongo:
     image: mongo:5.0
@@ -58,10 +57,12 @@ services:
 
 networks:
   mongo_test:
+    driver: bridge
 
 volumes:
 ###> doctrine/mongodb-odm-bundle ###
   dbdata:
+    driver: local
 ###< doctrine/mongodb-odm-bundle ###
 
 # Create network "docker network create mongo-vpn --subnet 10.0.2.0/16" ##

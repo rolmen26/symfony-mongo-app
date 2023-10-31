@@ -3,6 +3,7 @@
 namespace App\Document;
 
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -27,11 +28,20 @@ class User
 
     #[MongoDB\Field(type: 'date')]
     #[Assert\Date]
-    protected string $created_at;
+    protected DateTime $created_at;
 
     #[MongoDB\Field(type: 'date')]
-    #[Assert\Date]
-    protected string $updated_at;
+    #[Assert\DateTime]
+    protected DateTime|null $updated_at;
+
+
+    public function __construct($email, $password)
+    {
+        $this->email = $email;
+        $this->password = password_hash($password, CRYPT_SHA512);
+        $this->created_at = date_create_from_format(DATE_ATOM, date(DATE_ATOM));
+        $this->updated_at = null;
+    }
 
     public function getId(): string
     {
@@ -60,33 +70,33 @@ class User
     }
 
     /**
-     * @param string $created_at
+     * @param DateTime $created_at
      */
-    public function setCreatedAt(string $created_at): void
+    public function setCreatedAt(\DateTime $created_at): void
     {
         $this->created_at = $created_at;
     }
 
     /**
-     * @param string|null $updated_at
+     * @param DateTime $updated_at
      */
-    public function setUpdatedAt(mixed $updated_at): void
+    public function setUpdatedAt(\DateTime $updated_at): void
     {
         $this->updated_at = $updated_at;
     }
 
     /**
-     * @return string
+     * @return DateTime
      */
-    public function getCreatedAt(): string
+    public function getCreatedAt(): DateTime
     {
         return $this->created_at;
     }
 
     /**
-     * @return string
+     * @return DateTime
      */
-    public function getUpdatedAt(): string
+    public function getUpdatedAt(): DateTime
     {
         return $this->updated_at;
     }

@@ -38,8 +38,6 @@ COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 EXPOSE 80
 
 # Set the command to run when the container starts
-#ENTRYPOINT [ "supervisord" ]
+ENTRYPOINT [ "supervisord" ]
 
-#CMD ["-n", "-c", "/etc/supervisor/supervisord.conf"]
-
-CMD sh -c "php-fpm -D && nginx -g 'daemon off;'"
+CMD ["-n", "-c", "/etc/supervisor/supervisord.conf"]

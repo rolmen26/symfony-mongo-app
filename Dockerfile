@@ -3,8 +3,7 @@ FROM php:8.1-fpm-alpine3.18 as backend
 ARG user=www-data
 ARG group=www-data
 
-RUN apk update && apk add --no-cache nginx supervisor libpng-dev && \
-    apk add --no-cache $PHPIZE_DEPS && \
+RUN apk update && apk add --no-cache nginx supervisor libpng-dev openssl-dev libxml2-dev curl-dev $PHPIZE_DEPS && \
     # Install mongodb
     pecl install mongodb && \
     docker-php-ext-enable mongodb && \
@@ -27,6 +26,8 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 #Run Composer
 RUN composer install --prefer-dist
 
+RUN chmod 777 -R /app/var
+
 # Copy the Nginx config file
 COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/fpm-pool.conf
@@ -37,6 +38,8 @@ COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 EXPOSE 80
 
 # Set the command to run when the container starts
-ENTRYPOINT [ "supervisord" ]
+#ENTRYPOINT [ "supervisord" ]
 
-CMD ["-n", "-c", "/etc/supervisor/supervisord.conf"]
+#CMD ["-n", "-c", "/etc/supervisor/supervisord.conf"]
+
+CMD sh -c "php-fpm -D && nginx -g 'daemon off;'"

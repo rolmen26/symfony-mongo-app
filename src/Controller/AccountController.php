@@ -23,6 +23,11 @@ class AccountController extends AbstractController
     public function registerAction(DocumentManager $dm): JsonResponse
     {
         $data = file_get_contents('php://input');
+
+        if(!$data) {
+            return $this->json(['error' => 'No data received'], 400);
+        }
+
         $data = json_decode($data, true);
 
         /** @var UserRepository $userRepository  */
@@ -43,7 +48,7 @@ class AccountController extends AbstractController
                 'message' => 'The user was created successfully',
                 'userId' => $user->getId()]);
         } else {
-            return $this->json(['error' => 'Email already exists'], 500);
+            return $this->json(['error' => 'Email already exists'], 200);
         }
     }
 
@@ -57,6 +62,11 @@ class AccountController extends AbstractController
     public function loginAction(DocumentManager $dm): JsonResponse
     {
         $data = file_get_contents('php://input');
+
+        if(!$data) {
+            return $this->json(['error' => 'No data received'], 400);
+        }
+
         $data = json_decode($data, true);
 
         try {
@@ -67,7 +77,7 @@ class AccountController extends AbstractController
             return $this->json(['error' => $e->getMessage()], 500);
         }
         if (!$userFound) {
-            return $this->json(['error' => 'User not found'], 500);
+            return $this->json(['error' => 'User not found'], 404);
         }
 
         return $this->json(['user' => $userFound->getId()]);

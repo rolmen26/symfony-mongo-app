@@ -5,17 +5,22 @@ namespace App\Document;
 use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[MongoDB\Document(collection: 'users', repositoryClass: UserRepository::class)]
-#[MongoDB\Unique(fields: 'email')]
+#[MongoDB\UniqueIndex(keys: ['email' => "asc", 'uuid' => "asc"])]
+#[MongoDB\HasLifecycleCallbacks]
 class User
 {
-    /**
-     * @MongoDB\Id
-     */
+
     #[MongoDB\Id]
     protected string $id;
+
+    #[MongoDB\Field(type: 'string')]
+    #[Assert\NotBlank]
+    #[Assert\Uuid]
+    protected string $uuid;
 
     #[MongoDB\Field(type: 'string')]
     #[Assert\NotBlank]
@@ -30,7 +35,7 @@ class User
     #[Assert\Date]
     protected DateTime $created_at;
 
-    #[MongoDB\Field(type: 'date')]
+    #[MongoDB\Field(type: 'date', nullable: true)]
     #[Assert\DateTime]
     protected DateTime|null $updated_at;
 
@@ -39,13 +44,17 @@ class User
     {
         $this->email = $email;
         $this->password = password_hash($password, CRYPT_SHA512);
-        $this->created_at = date_create_from_format(DATE_ATOM, date(DATE_ATOM));
-        $this->updated_at = null;
+        $this->uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $email)->toString();
     }
 
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getUuid(): string
+    {
+        return $this->uuid;
     }
 
     public function getEmail(): string
@@ -70,17 +79,9 @@ class User
     }
 
     /**
-     * @param DateTime $created_at
-     */
-    public function setCreatedAt(\DateTime $created_at): void
-    {
-        $this->created_at = $created_at;
-    }
-
-    /**
      * @param DateTime $updated_at
      */
-    public function setUpdatedAt(\DateTime $updated_at): void
+    public function setUpdatedAt(DateTime $updated_at): void
     {
         $this->updated_at = $updated_at;
     }
@@ -99,5 +100,12 @@ class User
     public function getUpdatedAt(): DateTime
     {
         return $this->updated_at;
+    }
+
+    #[MongoDB\PrePersist]
+    public function prePersist(): void
+    {
+        $this->created_at = date_create_from_format(DATE_ATOM, date(DATE_ATOM));
+        $this->updated_at = null;
     }
 }

@@ -3,38 +3,46 @@
 namespace App\Repository;
 
 use App\Document\User;
-use Doctrine\ODM\MongoDB\Repository\DocumentRepository;
+use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class UserRepository extends DocumentRepository
+class UserRepository extends ServiceDocumentRepository
 {
 
     /**
-     * Find and return the desired user if the password match
-     *
-     * @param $email
-     * @param $password
-     * @return User|bool
+     * @inheritDoc
      */
-    public function findLoginUser($email, $password): User|null
+    public function __construct(ManagerRegistry $registry)
     {
-        /** @var User $userFound */
+        parent::__construct($registry, User::class);
+    }
+
+    public function findLoginUser(string $email, string $password): ?User
+    {
         $userFound = $this->userExists($email);
-        if (!$userFound) return null;
+        if (!$userFound) {
+            return null;
+        }
+
         $hashedPassword = $userFound->getPassword();
         $matchPassword = password_verify($password, $hashedPassword);
+
         return $matchPassword ? $userFound : null;
     }
 
-    /**
-     * Verify if the user exists in the database
-     * Return the User if it exists instead it'll return null
-     *
-     * @param $email
-     * @return User|null
-     */
-    public function userExists($email): User|null
+    public function userExists(string $email): ?User
     {
-        return $this->createQueryBuilder()->refresh()
-            ->field('email')->equals($email)->getQuery()->getSingleResult();
+        return $this->findOneBy(['email' => $email]);
+    }
+
+    public function save(User $user): ?User
+    {
+        try {
+            $this->dm->persist($user);
+            $this->dm->flush();
+            return $user;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 }

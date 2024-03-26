@@ -22,5 +22,11 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    Doctrine\Persistence\ManagerRegistry: '@doctrine_mongodb'
+
+    App\EventListener\UserRegisteredListener:
+        tags:
+            - { name: 'kernel.event_listener', event: App\Event\UserRegisteredEvent::NAME, method: 'onUserRegistered' }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

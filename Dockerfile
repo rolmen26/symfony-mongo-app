@@ -34,7 +34,7 @@ RUN mkdir -p /app/var \
     && chown -R ${user}:${group} /app/var
 
 # Copy the Nginx config file
-COPY etc/docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+COPY etc/docker/php/xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
 COPY etc/docker/nginx/default.conf /etc/nginx/http.d/default.conf
 COPY etc/docker/php/php.ini /usr/local/etc/php/php.ini
 

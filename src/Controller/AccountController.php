@@ -32,8 +32,6 @@ class AccountController extends AbstractController
             return $this->json(['error' => 'Invalid data'], 400);
         }
 
-        die('here');
-
         $user = $this->userService->registerUser($data['email'], $data['password']);
 
         if (!$user) {

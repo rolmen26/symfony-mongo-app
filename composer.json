@@ -8,7 +8,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/mongodb-odm-bundle": "^4.5",
-        "nelmio/cors-bundle": "^2.3",
         "ramsey/uuid": "4.7.5",
         "sixlive/dotenv-editor": "^2.0",
         "symfony/console": "6.2.*",
@@ -54,12 +53,6 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ],
-        "post-autoload-dump": [
-            "@composer run-script execute-schema-update"
-        ],
-        "execute-schema-update": [
-            "php bin/console doctrine:mongodb:schema:update --no-interaction"
         ],
         "generate-app-secret":[
             "php bin/console secret:regenerate-app-secret .env --no-interaction"

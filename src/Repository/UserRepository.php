@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Document\User;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 
 class UserRepository extends ServiceDocumentRepository
 {
@@ -19,7 +20,7 @@ class UserRepository extends ServiceDocumentRepository
 
     public function findLoginUser(string $email, string $password): ?User
     {
-        $userFound = $this->userExists($email);
+        $userFound = $this->findUserByEmail($email);
         if (!$userFound) {
             return null;
         }
@@ -30,19 +31,19 @@ class UserRepository extends ServiceDocumentRepository
         return $matchPassword ? $userFound : null;
     }
 
-    public function userExists(string $email): ?User
+    public function findUserByEmail(string $email): ?User
     {
         return $this->findOneBy(['email' => $email]);
     }
 
-    public function save(User $user): ?User
+    public function save(User $user): User|array
     {
         try {
             $this->dm->persist($user);
             $this->dm->flush();
             return $user;
-        } catch (\Exception $e) {
-            return null;
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
         }
     }
 }

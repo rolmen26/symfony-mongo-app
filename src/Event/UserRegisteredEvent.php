@@ -9,7 +9,7 @@ class UserRegisteredEvent extends Event
 {
     public const NAME = 'user.registered';
 
-    protected $user;
+    protected User $user;
 
     public function __construct(User $user)
     {

@@ -49,10 +49,20 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "@composer run-script generate-app-secret"
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "post-autoload-dump": [
+            "@composer run-script execute-schema-update"
+        ],
+        "execute-schema-update": [
+            "php bin/console doctrine:mongodb:schema:update --no-interaction"
+        ],
+        "generate-app-secret":[
+            "php bin/console secret:regenerate-app-secret .env --no-interaction"
         ]
     },
     "conflict": {

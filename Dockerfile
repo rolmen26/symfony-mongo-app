@@ -3,7 +3,7 @@ FROM php:8.1-fpm-alpine3.18 as backend
 ARG user=www-data
 ARG group=www-data
 
-RUN apk update && apk add --no-cache nginx libpng-dev openssl-dev libxml2-dev curl-dev $PHPIZE_DEPS \
+RUN apk update && apk add --no-cache nginx bash libpng-dev openssl-dev libxml2-dev curl-dev $PHPIZE_DEPS \
     libzip libzip-dev \
     php-xmlwriter php-tokenizer && \
     # Install mongodb
@@ -15,15 +15,17 @@ RUN apk update && apk add --no-cache nginx libpng-dev openssl-dev libxml2-dev cu
     pecl install xdebug && \
     docker-php-ext-enable xdebug && \
     apk del --no-cache $PHPIZE_DEPS && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/apk/* && \
+    # Composer time
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 
 WORKDIR /app
 
 COPY --chown={$user}:{$group} . /app
 
 # Composer
-COPY --from=composer@sha256:2dc4166e6ef310e16a9ab898e6bd5d088d1689f75f698559096d962b12c889cc /usr/bin/composer /usr/bin/composer
-ENV COMPOSER_HOME /usr/bin/composer
+ENV COMPOSER_HOME /usr/local/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 #Run Composer

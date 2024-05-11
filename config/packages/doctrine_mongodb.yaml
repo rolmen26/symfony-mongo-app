@@ -10,11 +10,12 @@ doctrine_mongodb:
         default:
             auto_mapping: true
             mappings:
-                App:
+                ClientManagement:
                     is_bundle: false
-                    dir: '%kernel.project_dir%/src/Document'
-                    prefix: 'App\Document'
-                    alias: App
+                    type: attribute
+                    dir: '%kernel.project_dir%/src/ClientManagement/Domain/Model'
+                    prefix: 'App\ClientManagement\Domain\Model'
+                    alias: ClientManagement
 
 when@prod:
     doctrine_mongodb:

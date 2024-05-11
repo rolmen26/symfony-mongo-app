@@ -4,3 +4,12 @@ README.md
 Dockerfile
 docker-compose.yml
 .dockerignore
+
+/var/cache/*
+/var/logs/*
+/var/sessions/*
+/var/test/*
+/tests
+/phpunit.xml.dist
+
+/vendor/

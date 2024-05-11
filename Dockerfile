@@ -1,43 +1,45 @@
-FROM php:8.1-fpm-alpine3.18 as backend
+ARG PHP_VERSION=8.1
+FROM php:${PHP_VERSION}-fpm-alpine3.18 as backend
 
 ARG user=www-data
 ARG group=www-data
 
-RUN apk update && apk add --no-cache nginx supervisor libpng-dev openssl-dev libxml2-dev curl-dev $PHPIZE_DEPS && \
-    # Install mongodb
-    pecl install mongodb && \
-    docker-php-ext-enable mongodb && \
+RUN apk update && apk add --no-cache \
+    nginx \
+    libpng-dev \
+    openssl-dev \
+    libxml2-dev \
+    curl-dev \
+    linux-headers \
+    libzip \
+    libzip-dev \
+    php-xmlwriter \
+    php-tokenizer \
+    $PHPIZE_DEPS && \
+    pecl install mongodb xdebug && \
+    docker-php-ext-enable mongodb xdebug && \
     docker-php-ext-install gd sockets && \
-    # Install xdebug
-    apk add --no-cache linux-headers && \
-    pecl install xdebug && \
-    docker-php-ext-enable xdebug && \
-    rm -rf /var/cache/apk/*
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    apk del --purge $PHPIZE_DEPS && \
+    rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
+
+ENV COMPOSER_HOME=/usr/local/bin/composer \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    PATH=$PATH:/usr/local/bin/composer
 
 WORKDIR /app
+COPY --chown=${user}:${group} . /app
 
-COPY --chown={$user}:{$group} . /app
-
-# Composer
-COPY --from=composer@sha256:2dc4166e6ef310e16a9ab898e6bd5d088d1689f75f698559096d962b12c889cc /usr/bin/composer /usr/bin/composer
-ENV COMPOSER_HOME /usr/bin/composer
-ENV COMPOSER_ALLOW_SUPERUSER 1
-
-#Run Composer
 RUN composer install --prefer-dist
 
-RUN chmod 777 -R /app/var
+RUN mkdir -p /app/var /run/nginx && \
+    chmod 777 -R /app/var && \
+    chown -R ${user}:${group} /app /run/nginx
 
-# Copy the Nginx config file
-COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY ./docker/php/fpm-pool.conf /usr/local/etc/php-fpm.d/fpm-pool.conf
-COPY ./docker/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
-COPY ./docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY etc/docker/php/xdebug.ini $PHP_INI_DIR/conf.d/
+COPY etc/docker/nginx/default.conf /etc/nginx/http.d/
+COPY etc/docker/php/php.ini /usr/local/etc/php/
 
-# Expose port 80 for HTTP traffic
 EXPOSE 80
 
-# Set the command to run when the container starts
-ENTRYPOINT [ "supervisord" ]
-
-CMD ["-n", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]

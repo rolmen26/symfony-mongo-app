@@ -12,7 +12,7 @@ class ClientSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ClientRegisteredEvent::NAME => 'onUserRegistered',
+            ClientRegisteredEvent::NAME => 'onClientRegistered',
         ];
     }
 

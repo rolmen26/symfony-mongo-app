@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ClientManagement\Application\Controller;
+namespace App\ClientManagement\Infrastructure\Controller;
 
 use App\ClientManagement\Application\Command\RegisterClientCommand;
 use App\ClientManagement\Application\Service\ClientRegistrationService;

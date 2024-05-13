@@ -1,7 +1,11 @@
 client_management:
-    resource: ../src/ClientManagement/Application/Controller/
+    resource: ../src/ClientManagement/Infrastructure/Controller/
     type: attribute
     prefix: /api/client
+
+home: 
+    resource: ../src/Common/Infrastructure/Web/Controller/
+    type: attribute
 
 kernel:
     resource: ../src/Kernel.php

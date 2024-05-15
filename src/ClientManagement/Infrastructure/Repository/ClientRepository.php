@@ -5,7 +5,8 @@ namespace App\ClientManagement\Infrastructure\Repository;
 use App\ClientManagement\Domain\Model\Client;
 use App\ClientManagement\Domain\Repository\ClientRepositoryInterface;
 use Doctrine\Bundle\MongoDBBundle\Repository\ServiceDocumentRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use MongoDB\Driver\Session;
 
 class ClientRepository extends ServiceDocumentRepository implements ClientRepositoryInterface
 {
@@ -13,9 +14,9 @@ class ClientRepository extends ServiceDocumentRepository implements ClientReposi
     /**
      * @inheritDoc
      */
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, $class)
     {
-        parent::__construct($registry, Client::class);
+        parent::__construct($registry, $class);
     }
 
     /**

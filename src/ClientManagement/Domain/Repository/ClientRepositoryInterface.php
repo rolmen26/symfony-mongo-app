@@ -3,6 +3,7 @@
 namespace App\ClientManagement\Domain\Repository;
 
 use App\ClientManagement\Domain\Model\Client;
+use MongoDB\Driver\Session;
 
 interface ClientRepositoryInterface
 {

@@ -33,11 +33,7 @@ final class RegisterClientController extends AbstractController
 
             return $this->json([
                 'message' => 'Client registered successfully',
-                'client' => [
-                    'id' => $client->getUuid(),
-                    'name' => $client->getName(),
-                    'email' => $client->getEmail()
-                ]
+                'client' => [ 'uuid' => $client->getUuid()]
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);

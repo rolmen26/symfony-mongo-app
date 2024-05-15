@@ -42,17 +42,13 @@ services:
         arguments:
             $clientRepository: '@App\ClientManagement\Infrastructure\Repository\ClientRepository'
             $eventDispatcher: '@event_dispatcher'
-
-    Doctrine\Persistence\ManagerRegistry:
-        alias: doctrine_mongodb.odm.manager_registry
+            $outboxMessageRepository: '@App\Common\Infrastructure\Repository\OutboxMessageRepository'
 
     App\ClientManagement\Infrastructure\Repository\ClientRepository:
-        class: App\ClientManagement\Infrastructure\Repository\ClientRepository
         arguments:
-            - '@doctrine_mongodb'
+            $registry: '@doctrine_mongodb'
+            $class: 'App\ClientManagement\Domain\Model\Client'
 
-    Doctrine\ODM\MongoDB\ManagerRegistry:
-        alias: 'doctrine_mongodb'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

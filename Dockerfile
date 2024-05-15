@@ -23,9 +23,15 @@ RUN apk update && apk add --no-cache \
     apk del --purge $PHPIZE_DEPS && \
     rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-ENV COMPOSER_HOME=/usr/local/bin/composer \
+# Establecer variables de entorno para Composer
+ENV COMPOSER_HOME=/composer \
     COMPOSER_ALLOW_SUPERUSER=1 \
-    PATH=$PATH:/usr/local/bin/composer
+    PATH=$PATH:/composer/vendor/bin
+
+# Crear y configurar el directorio de caché de Composer
+RUN mkdir -p /composer/cache && \
+    chmod -R 775 /composer && \
+    chown -R ${user}:${group} /composer
 
 WORKDIR /app
 COPY --chown=${user}:${group} . /app

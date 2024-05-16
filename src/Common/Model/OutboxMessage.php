@@ -2,6 +2,7 @@
 
 namespace App\Common\Model;
 
+use App\Common\Model\Types\OutboxMessageStatus;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -46,7 +47,7 @@ class OutboxMessage
         $this->type = $event->getEventName();
         $this->headers = $event->getHeaders();
         $this->payload = $event->getPayload();
-        $this->status = 'pending';
+        $this->status = OutboxMessageStatus::Pending->value;
         $this->createdAt = date_create_from_format(DATE_ATOM, date(DATE_ATOM));
         $this->dispatchedAt = null;
     }

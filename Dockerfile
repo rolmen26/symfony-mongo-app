@@ -1,27 +1,26 @@
+# Usa una imagen base liviana para la construcción
 ARG PHP_VERSION=8.1
-FROM php:${PHP_VERSION}-fpm-alpine3.18 as backend
+FROM php:${PHP_VERSION}-fpm-alpine3.18 as builder
 
 ARG user=www-data
 ARG group=www-data
 
-RUN apk update && apk add --no-cache \
-    nginx \
+# Instalar dependencias necesarias para construir la aplicación
+RUN apk update && apk add --no-cache --virtual .build-deps \
+    gcc \
+    g++ \
+    make \
+    autoconf \
     libpng-dev \
     openssl-dev \
     libxml2-dev \
     curl-dev \
-    linux-headers \
-    libzip \
     libzip-dev \
-    php-xmlwriter \
-    php-tokenizer \
-    $PHPIZE_DEPS && \
-    pecl install mongodb xdebug && \
-    docker-php-ext-enable mongodb xdebug && \
-    docker-php-ext-install gd sockets && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    apk del --purge $PHPIZE_DEPS && \
-    rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd sockets \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Establecer variables de entorno para Composer
 ENV COMPOSER_HOME=/composer \
@@ -36,15 +35,38 @@ RUN mkdir -p /composer/cache && \
 WORKDIR /app
 COPY --chown=${user}:${group} . /app
 
-RUN composer install --prefer-dist
+# Instalar dependencias de Composer para producción
+RUN composer install --no-dev --optimize-autoloader && \
+    rm -rf /composer/cache
 
+# Imagen final para producción
+FROM php:${PHP_VERSION}-fpm-alpine3.18
+
+ARG user=www-data
+ARG group=www-data
+
+# Instalar dependencias necesarias para la ejecución de la aplicación
+RUN apk add --no-cache \
+    nginx \
+    libpng \
+    openssl \
+    libxml2 \
+    curl \
+    libzip \
+    freetype \
+    jpeg
+
+# Copiar configuraciones de PHP y nginx
+COPY etc/docker/php/php.ini /usr/local/etc/php/
+COPY etc/docker/nginx/default.conf /etc/nginx/http.d/
+
+# Copiar la aplicación desde el builder
+COPY --from=builder /app /app
+
+# Configurar permisos y directorios
 RUN mkdir -p /app/var /run/nginx && \
     chmod 777 -R /app/var && \
     chown -R ${user}:${group} /app /run/nginx
-
-COPY etc/docker/php/xdebug.ini $PHP_INI_DIR/conf.d/
-COPY etc/docker/nginx/default.conf /etc/nginx/http.d/
-COPY etc/docker/php/php.ini /usr/local/etc/php/
 
 EXPOSE 80
 

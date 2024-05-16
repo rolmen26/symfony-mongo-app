@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: symfony_app
     restart: unless-stopped
     extra_hosts:
@@ -13,8 +13,6 @@ services:
       - ./:/app
       #- /app/vendor #When prod no required
       - /app/var
-      - ./etc/docker/nginx/default.conf:/etc/nginx/http.d/default.conf
-      - ./etc/docker/php/php.ini:/usr/local/etc/php/php.ini
     ports:
       - "80:80"
     depends_on:
@@ -36,7 +34,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGODB_DB}
     volumes:
-      - dbdata:/data/db
+      - /home/$USER/symfony-app/mongo-data:/data/db
+      - /home/$USER/symfony-app/mongo-log:/var/log/mongodb/
 ###< doctrine/mongodb-odm-bundle ###
   mongo-express:
     image: mongo-express:latest
@@ -61,11 +60,5 @@ services:
 networks:
   mongo_test:
     driver: bridge
-
-volumes:
-###> doctrine/mongodb-odm-bundle ###
-  dbdata:
-    driver: local
-###< doctrine/mongodb-odm-bundle ###
 
 # Create network "docker network create mongo-vpn --subnet 10.0.2.0/16" ##

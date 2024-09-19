@@ -1,0 +1,12 @@
+framework:
+    messenger:
+        default_bus: command.bus
+
+        buses:
+            command.bus: ~  # Define el bus de comandos
+
+        transports:
+            sync: 'sync://' # Usa el transporte síncrono para ejecutar comandos inmediatamente
+
+        routing:
+            'App\ClientManagement\Application\Command\RegisterClientCommand': sync

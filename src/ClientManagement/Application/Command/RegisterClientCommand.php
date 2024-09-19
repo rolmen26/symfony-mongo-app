@@ -4,16 +4,12 @@ namespace App\ClientManagement\Application\Command;
 
 class RegisterClientCommand
 {
-    private string $name;
-    private string $email;
-    private string $password;
 
-    public function __construct(string $name, string $email, string $password)
-    {
-        $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
-    }
+    public function __construct(
+        private readonly string $name,
+        private readonly string $email,
+        private readonly string $password
+    ) {}
 
     public function getName(): string
     {

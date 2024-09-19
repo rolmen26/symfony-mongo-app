@@ -5,20 +5,16 @@ namespace App\ClientManagement\Domain\Events;
 use App\ClientManagement\Domain\Model\Client;
 use App\Common\Model\BaseEvent;
 
-class ClientRegistered extends BaseEvent
+class ClientOnboarded extends BaseEvent
 {
-    public const NAME = 'client.registered';
+    public const NAME = 'client.onboarded';
 
     protected Client $client;
 
     public function __construct(Client $client)
     {
-        parent::__construct();
         $this->client = $client;
-        $this->eventName = self::NAME;
-        $this->queue = 'client-management';
-        $this->payload = $this->getPayload();
-        $this->headers = $this->getHeaders();
+        parent::__construct();
     }
 
     public function getPayload(): array

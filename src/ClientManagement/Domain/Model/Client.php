@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[MongoDB\Document(collection: "clients", repositoryClass: ClientRepository::class)]
+#[MongoDB\Document(collection: "client", repositoryClass: ClientRepository::class)]
 #[MongoDB\UniqueIndex(keys: ['email' => 'asc'])]
 #[MongoDB\HasLifecycleCallbacks]
 class Client extends BaseDocument implements LifecycleCallbacks

@@ -22,10 +22,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\ClientManagement\Domain\Service\ClientSubscriber:
-        tags:
-            - { name: 'kernel.event_subscriber' }
-
     App\ClientManagement\Infrastructure\Controller\:
         resource: '../src/ClientManagement/Infrastructure/Controller'
         tags: [ 'controller.service_arguments' ]
@@ -38,10 +34,10 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
-    App\ClientManagement\Application\Service\ClientRegistrationService:
+    App\ClientManagement\Application\Handler\RegisterClientCommandHandler:
+        tags: ['messenger.message_handler']
         arguments:
             $clientRepository: '@App\ClientManagement\Infrastructure\Repository\ClientRepository'
-            $eventDispatcher: '@event_dispatcher'
             $outboxMessageRepository: '@App\Common\Infrastructure\Repository\OutboxMessageRepository'
 
     App\ClientManagement\Infrastructure\Repository\ClientRepository:

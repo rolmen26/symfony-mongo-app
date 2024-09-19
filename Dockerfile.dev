@@ -1,5 +1,5 @@
 ARG PHP_VERSION=8.1
-FROM php:${PHP_VERSION}-fpm-alpine3.18 as backend
+FROM php:${PHP_VERSION}-fpm-alpine3.18 AS backend
 
 ARG user=www-data
 ARG group=www-data

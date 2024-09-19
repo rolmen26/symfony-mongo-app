@@ -20,8 +20,6 @@ abstract class BaseEvent implements DomainEvent
     protected array $payload;
     /** @var array $headers */
     protected array $headers;
-    /** @var string $queue */
-    protected string $queue;
     /** @var string $firedAt */
     protected string $firedAt;
     /** @var string $dispatchedAt */
@@ -30,7 +28,10 @@ abstract class BaseEvent implements DomainEvent
     public function __construct()
     {
         $this->Uuid = Uuid::uuid4();
+        $this->eventName = static::NAME;
         $this->firedAt = microtime(true);
+        $this->payload = $this->getPayload();
+        $this->headers = $this->getHeaders();
     }
 
     public function getUuid(): string
@@ -41,11 +42,6 @@ abstract class BaseEvent implements DomainEvent
     public function getEventName(): string
     {
         return $this->eventName;
-    }
-
-    public function getQueue(): string
-    {
-        return $this->queue;
     }
 
     public function getHeaders(): array

@@ -6,6 +6,6 @@ interface DomainEvent
 {
     public function getUuid();
     public function getEventName();
-    public function getHeaders();
+    public function getProperties();
     public function getPayload();
 }

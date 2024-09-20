@@ -12,6 +12,37 @@
             "src/Document/.gitignore"
         ]
     },
+    "enqueue/amqp-bunny": {
+        "version": "0.10",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "0.7",
+            "ref": "fa1a9a0c5ad7a58ced6401f2b9d66d6078679715"
+        }
+    },
+    "enqueue/enqueue-bundle": {
+        "version": "0.10",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "0.9",
+            "ref": "c6ec89b63f963d10ad0d7a7bea170359c119c8bc"
+        },
+        "files": [
+            "config/packages/enqueue.yaml",
+            "config/packages/test/enqueue.yaml"
+        ]
+    },
+    "enqueue/fs": {
+        "version": "0.10",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "0.4",
+            "ref": "822505a7de797bd869c5757bb9bae85f647d870d"
+        }
+    },
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {

@@ -23,7 +23,7 @@ abstract class BaseMessage
     protected string $type;
 
     #[MongoDB\Field(type: "hash")]
-    protected array $headers;
+    protected array $properties;
 
     #[MongoDB\Field(type: "hash")]
     protected array $payload;
@@ -32,14 +32,14 @@ abstract class BaseMessage
     #[Assert\NotBlank]
     protected string $status;
 
-    #[MongoDB\Field(type: "date")]
+    #[MongoDB\Field(type: "string")]
     protected string $createdAt;
 
     public function __construct(BaseEvent $event)
     {
         $this->messageId = $event->getUuid();
         $this->type = $event->getEventName();
-        $this->headers = $event->getHeaders();
+        $this->properties = $event->getProperties();
         $this->payload = $event->getPayload();
         $this->createdAt = (new DateTimeImmutable())->format(DATE_ATOM);
     }
@@ -54,9 +54,9 @@ abstract class BaseMessage
         return $this->type;
     }
 
-    public function getHeaders(): array
+    public function getProperties(): array
     {
-        return $this->headers;
+        return $this->properties;
     }
 
     public function getPayload(): array

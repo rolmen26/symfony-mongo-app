@@ -45,6 +45,18 @@ services:
             $registry: '@doctrine_mongodb'
             $class: 'App\ClientManagement\Domain\Model\Client'
 
+    App\Common\Infrastructure\Repository\OutboxMessageRepository:
+        arguments:
+            $registry: '@doctrine_mongodb'
+
+    App\Common\Infrastructure\Messaging\EventPublisher:
+        arguments:
+            - '@enqueue.client.default.traceable_producer'
+
+    App\Common\Infrastructure\Commands\DispatchMessages:
+        tags: ['console.command']
+        arguments:
+            $outboxMessageRepository: '@App\Common\Infrastructure\Repository\OutboxMessageRepository'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

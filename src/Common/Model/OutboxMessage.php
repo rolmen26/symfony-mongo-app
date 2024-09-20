@@ -11,7 +11,7 @@ use App\Common\Infrastructure\Repository\OutboxMessageRepository;
 class OutboxMessage extends BaseMessage
 {
 
-    #[MongoDB\Field(type: "date", nullable: true)]
+    #[MongoDB\Field(type: "string", nullable: true)]
     protected ?string $dispatchedAt;
 
     public function __construct(BaseEvent $event)

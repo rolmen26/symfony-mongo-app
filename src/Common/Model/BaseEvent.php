@@ -31,7 +31,7 @@ abstract class BaseEvent implements DomainEvent
         $this->eventName = static::NAME;
         $this->firedAt = microtime(true);
         $this->payload = $this->getPayload();
-        $this->headers = $this->getHeaders();
+        $this->headers = $this->getProperties();
     }
 
     public function getUuid(): string
@@ -44,7 +44,7 @@ abstract class BaseEvent implements DomainEvent
         return $this->eventName;
     }
 
-    public function getHeaders(): array
+    public function getProperties(): array
     {
         return [
             'app_id' => self::DEFAULT_APP_ID,

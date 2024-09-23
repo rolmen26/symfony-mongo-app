@@ -22,14 +22,12 @@ abstract class BaseEvent implements DomainEvent
     protected array $headers;
     /** @var string $firedAt */
     protected string $firedAt;
-    /** @var string $dispatchedAt */
-    protected string $dispatchedAt;
 
     public function __construct()
     {
         $this->Uuid = Uuid::uuid4();
         $this->eventName = static::NAME;
-        $this->firedAt = microtime(true);
+        $this->firedAt = time();
         $this->payload = $this->getPayload();
         $this->headers = $this->getProperties();
     }
@@ -47,10 +45,10 @@ abstract class BaseEvent implements DomainEvent
     public function getProperties(): array
     {
         return [
-            'app_id' => self::DEFAULT_APP_ID,
-            'message_id' => $this->getUuid(),
-            'type' => $this->getEventName(),
-            'timestamp' => $this->firedAt
+            'app_id'        => self::DEFAULT_APP_ID,
+            'message_id'    => $this->getUuid(),
+            'type'          => $this->getEventName(),
+            'timestamp'     => $this->firedAt
         ];
     }
 
@@ -62,11 +60,6 @@ abstract class BaseEvent implements DomainEvent
     public function getFiredAt(): string
     {
         return $this->firedAt;
-    }
-
-    public function getDispatchedAt(): string
-    {
-        return $this->dispatchedAt;
     }
 
 }

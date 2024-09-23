@@ -1,4 +1,13 @@
 enqueue:
   default:
-    transport: '%env(resolve:ENQUEUE_DSN)%'
-    client: ~
+    transport:
+      dsn: '%env(resolve:ENQUEUE_DSN)%'
+    client:
+      prefix: ''
+      app_name: ''
+      separator: '.'
+      router_topic: '%env(resolve:RABBITMQ_EXCHANGE_NAME)%'
+      router_queue: '%env(resolve:RABBITMQ_QUEUE_NAME)%'
+      default_queue: '%env(resolve:RABBITMQ_QUEUE_NAME)%'
+    extensions:
+      reply_extension: true

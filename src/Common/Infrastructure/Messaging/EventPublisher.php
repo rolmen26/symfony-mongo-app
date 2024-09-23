@@ -26,13 +26,29 @@ class EventPublisher
      */
     public function publish(Iterator $messages): void
     {
-        try{
+        try {
             foreach ($messages as $message) {
-                $EnqueueMessage = new Message($message->getPayload(), $message->getProperties());
-                $this->producer->sendEvent($_ENV['RABBITMQ_EXCHANGE_NAME'], $EnqueueMessage);
+                $EnqueueMessage = $this->buildMessage($message);
+                $this->producer->sendEvent($_ENV['RABBITMQ_QUEUE_NAME'], $EnqueueMessage);
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
+    }
+
+    /**
+     * Build a message to be sent to RabbitMQ
+     *
+     * @param $message
+     *
+     * @return Message
+     */
+    private function buildMessage($message): Message
+    {
+        $EnqueueMessage = new Message($message->getPayload());
+        $EnqueueMessage->setMessageId($message->getMessageId());
+        $EnqueueMessage->setTimestamp((int) $message->getProperties()['timestamp']);
+        $EnqueueMessage->setHeaders($message->getProperties());
+        return $EnqueueMessage;
     }
 }

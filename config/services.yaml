@@ -51,7 +51,7 @@ services:
 
     App\Common\Infrastructure\Messaging\EventPublisher:
         arguments:
-            - '@enqueue.client.default.traceable_producer'
+            - '@enqueue.client.default.producer'
 
     App\Common\Infrastructure\Commands\DispatchMessages:
         tags: ['console.command']

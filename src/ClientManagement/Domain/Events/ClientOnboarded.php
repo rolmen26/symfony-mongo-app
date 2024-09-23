@@ -20,6 +20,8 @@ class ClientOnboarded extends BaseEvent
     public function getPayload(): array
     {
         return [
+            'uuid' => $this->getUuid(),
+            'fired_at' => $this->firedAt,
             'client' => [
                 'id' => $this->client->getId(),
                 'name' => $this->client->getName(),
